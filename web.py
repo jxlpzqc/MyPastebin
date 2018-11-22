@@ -45,6 +45,12 @@ def reprocess_html(content):
 	content = content.replace('\t','&nbsp&nbsp&nbsp&nbsp')
 	return content
 
+def redirect_after_alert(url,alert):
+	html = "<script>"
+	html = html + "alert('%s');"%alert
+	html = html + "window.location.href='%s';"%url
+	html = html + "</script>"
+	return html
 	
 #Syntax处理器部分
 def process_pain(content):
@@ -74,6 +80,7 @@ def startauto():
 def index():
 	return render_template('main.html',syntaxs=syntaxs)
 
+	
 @app.route('/p/<id>',methods = ['GET','POST'])
 def show(id):
 	
@@ -98,7 +105,7 @@ def show(id):
 		if message.password == request.form.get('password'):
 			return render_template('show.html',message=message)
 		else:
-			return render_template('input.html')
+			return redirect_after_alert(url_for("show",id=id),"Invalid Password!!")
 
 	
 @app.route('/new',methods = ['POST'])
@@ -124,7 +131,7 @@ def	newpaste():
 	dar = (request.form.get('dar') == 'on')
 	
 	if content == '':
-		return redirect(url_for('index'))
+		return redirect_after_alert(url_for('index'),"Please input your content!!!")
 	if poster == '':
 		poster = 'anonymous'
 	#content = encode_html(content)
@@ -157,6 +164,7 @@ def	newpaste():
 	return resp
 
 
+__author__ = "An honest liar"
 	
 #启动函数
 if __name__ == '__main__':
