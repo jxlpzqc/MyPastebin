@@ -84,6 +84,14 @@ def show(id):
 	if request.method == "GET":
 		if message.type == 0:
 			return render_template('show.html',message=message)
+		elif message.type == 2:
+			if request.cookies.get(id) != message.password:
+				resp = render_template('show.html',message=message)
+				db.session.delete(message)
+				db.session.commit()
+				return resp
+			else:
+				return render_template('show.html',message=message)
 		else:
 			return render_template('input.html')
 	else:
@@ -113,6 +121,8 @@ def	newpaste():
 	expiration = exp.strftime("%Y-%m-%d %H:%M:%S")
 	content = request.form.get('content')
 	password = request.form.get('password')
+	dar = (request.form.get('dar') == 'on')
+	
 	if content == '':
 		return redirect(url_for('index'))
 	if poster == '':
@@ -130,16 +140,21 @@ def	newpaste():
 	md5.update(idsrc.encode('utf-8'))
 	id = md5.hexdigest()
 	type = 0
-	if password != '':
+	
+	if dar:
+		type = 2 
+		password = str(random.uniform(0,100))
+	elif password != '':
 		type = 1
 	new = Message(id,poster,syntax,content,expiration,type,password)
 	db.session.add(new)
 	db.session.commit()  
 	#TODO:所有访问数据库的地方做异常处理
+	resp = redirect(url_for('show',id=id))
+	if dar:
+		resp.set_cookie(id,password)
 	
-	
-	
-	return redirect(url_for('show',id=id))
+	return resp
 
 
 	
