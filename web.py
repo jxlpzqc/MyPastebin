@@ -74,13 +74,23 @@ def startauto():
 def index():
 	return render_template('main.html',syntaxs=syntaxs)
 
-@app.route('/p/<id>')
+@app.route('/p/<id>',methods = ['GET','POST'])
 def show(id):
+	
 	message = Message.query.filter_by(id=id).first()
 	if message == None:
 		abort(404)
-	print(message)
-	return render_template('show.html',message=message)
+	#print(message)
+	if request.method == "GET":
+		if message.type == 0:
+			return render_template('show.html',message=message)
+		else:
+			return render_template('input.html')
+	else:
+		if message.password == request.form.get('password'):
+			return render_template('show.html',message=message)
+		else:
+			return render_template('input.html')
 
 	
 @app.route('/new',methods = ['POST'])
@@ -119,9 +129,15 @@ def	newpaste():
 	md5 = hashlib.md5()
 	md5.update(idsrc.encode('utf-8'))
 	id = md5.hexdigest()
-	new = Message(id,poster,syntax,content,expiration)
+	type = 0
+	if password != '':
+		type = 1
+	new = Message(id,poster,syntax,content,expiration,type,password)
 	db.session.add(new)
-	db.session.commit()
+	db.session.commit()  
+	#TODO:所有访问数据库的地方做异常处理
+	
+	
 	
 	return redirect(url_for('show',id=id))
 
