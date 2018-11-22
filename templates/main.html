@@ -15,7 +15,7 @@
                 <p>Syntax:
                     <select name="syntax">
                     {% for syntax in syntaxs %}
-                      <option value ="{{ syntax.id }}">{{ syntax.text }}</option>
+                      <option value ="{{ syntax }}">{{ syntaxs[syntax].text }}</option>
                     {% endfor %}
                     </select>
                 </p>

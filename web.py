@@ -1,7 +1,7 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from time import time
-import random,hashlib
+import random,hashlib,cgi
 
 #数据库配置
 SQL_USERNAME = 'root'
@@ -35,10 +35,25 @@ class Message(db.Model):
 		self.type = type
 		self.password = password
 		
+#工具函数
+def reprocess_html(content):
+	#转义html字符
+	content = cgi.escape(content)
+	content = content.replace('\n','<br/>')
+	content = content.replace(' ','&nbsp')
+	content = content.replace('\t','&nbsp&nbsp&nbsp&nbsp')
+	return content
 
+	
+#Syntax处理器部分
+def process_pain(content):
+	return content
+	
 
-syntaxs = [ {'id':1,'text':'pain text' },{'id':2,'text':'Python' } ]
+#syntax 定义
+syntaxs = { 1:{'text':'Pain Text', 'function':process_pain}, 2:{'text':'Python'} }
 
+#Controller部分
 @app.route('/')
 def index():
 	return render_template('main.html',syntaxs=syntaxs)
@@ -56,6 +71,13 @@ def	newpaste():
 	expiration2 = request.form.get('expiration')
 	expiration = "2018-11-23"
 	content = request.form.get('content')
+	#content = encode_html(content)
+	content = reprocess_html(content)
+	#使用处理器
+	if 'function' in syntaxs[syntax].keys() and syntaxs[syntax]['function'] != None:
+		content = syntaxs[syntax]['function'](content)
+	
+	
 	#得到一个ID
 	idsrc = poster+content+request.remote_addr+str(time())+str(random.uniform(0,100))
 	md5 = hashlib.md5()
@@ -66,7 +88,10 @@ def	newpaste():
 	db.session.commit()
 	
 	return redirect(url_for('show',id=id))
+
+
 	
+#启动函数
 if __name__ == '__main__':
 	#db.drop_all()
 	#db.create_all()
