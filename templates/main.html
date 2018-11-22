@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>My pastebin</title>
+        
+    </head>
+    
+    <body>
+        <h1>Welcome to My Pastebin</h1>
+        <div>
+            <form method="post" action="/new">
+                <p>Poster:
+                    <input name="poster" placeholder="Enter your name"/>
+                </p>
+                <p>Syntax:
+                    <select name="syntax">
+                    {% for syntax in syntaxs %}
+                      <option value ="{{ syntax.id }}">{{ syntax.text }}</option>
+                    {% endfor %}
+                    </select>
+                </p>
+                <p>Expiration:
+                    <select name="expiration">
+						<option value="day" selected="selected">A day</option>
+                        <option value="week">A week</option>
+                        <option value="month">A month</option>
+                        <option value="year">A year</option>
+                    </select>
+                </p>
+                <p>Content:
+                    <textarea name='content'></textarea>
+                </p>
+                <p><input type="submit" value="Paste!!"/> </p>
+            </form>
+        </div>
+    </body>
+</html>
