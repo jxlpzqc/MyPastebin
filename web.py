@@ -1,7 +1,8 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
-from time import time
-import random,hashlib,cgi
+from time import time,sleep
+import threading
+import random,hashlib,cgi,datetime
 
 #数据库配置
 SQL_USERNAME = 'root'
@@ -51,7 +52,22 @@ def process_pain(content):
 	
 
 #syntax 定义
-syntaxs = { 1:{'text':'Pain Text', 'function':process_pain}, 2:{'text':'Python'} }
+syntaxs = { 1:{'text':'Pain Text', 'function':process_pain}, 2:{'text':'Python'} , 3:{'text':'C++'} }
+
+#自动删除过期数据
+def autodelete():
+	time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+	sql = "delete from messages where expiration <'" + time + "'" 
+	print("Cleanning at "+time)
+	db.session.execute(sql)
+	db.session.commit()
+	sleep(60*60)
+	autodelete()
+	
+def startauto():
+	print("Auto Clean Service has benn launched")
+	t = threading.Thread(target=autodelete)
+	t.start()
 
 #Controller部分
 @app.route('/')
@@ -61,6 +77,9 @@ def index():
 @app.route('/p/<id>')
 def show(id):
 	message = Message.query.filter_by(id=id).first()
+	if message == None:
+		abort(404)
+	print(message)
 	return render_template('show.html',message=message)
 
 	
@@ -68,9 +87,26 @@ def show(id):
 def	newpaste():
 	poster = request.form.get('poster')
 	syntax = int(request.form.get('syntax'))
-	expiration2 = request.form.get('expiration')
-	expiration = "2018-11-23"
+	expirationstr = request.form.get('expiration')
+	now = datetime.datetime.now()
+	if expirationstr=='day':
+		exp = now + datetime.timedelta(days=1)
+	elif expirationstr=='week':
+		exp = now + datetime.timedelta(days=7)
+	elif expirationstr=='month':
+		exp = now + datetime.timedelta(days=30)
+	elif expirationstr=='year':
+		exp = now + datetime.timedelta(days=365)
+	else:
+		exp = now + datetime.timedelta(days=1)
+	#expiration = "2018-11-23"
+	expiration = exp.strftime("%Y-%m-%d %H:%M:%S")
 	content = request.form.get('content')
+	password = request.form.get('password')
+	if content == '':
+		return redirect(url_for('index'))
+	if poster == '':
+		poster = 'anonymous'
 	#content = encode_html(content)
 	content = reprocess_html(content)
 	#使用处理器
@@ -95,5 +131,8 @@ def	newpaste():
 if __name__ == '__main__':
 	#db.drop_all()
 	#db.create_all()
+	
+	#startauto()
 	app.run(debug='true')
+	
 	
