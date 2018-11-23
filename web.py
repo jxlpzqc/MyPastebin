@@ -65,8 +65,11 @@ def autodelete():
 	time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 	sql = "delete from messages where expiration <'" + time + "'" 
 	print("Cleanning at "+time)
-	db.session.execute(sql)
-	db.session.commit()
+	try:
+		db.session.execute(sql)
+		db.session.commit()
+	except:
+		print("Error:Error when cleaning!!!")
 	sleep(60*60)
 	autodelete()
 	
@@ -94,8 +97,11 @@ def show(id):
 		elif message.type == 2:
 			if request.cookies.get(id) != message.password:
 				resp = render_template('show.html',message=message)
-				db.session.delete(message)
-				db.session.commit()
+				try:
+					db.session.delete(message)
+					db.session.commit()
+				except:
+					abort(500)
 				return resp
 			else:
 				return render_template('show.html',message=message)
@@ -154,8 +160,11 @@ def	newpaste():
 	elif password != '':
 		type = 1
 	new = Message(id,poster,syntax,content,expiration,type,password)
-	db.session.add(new)
-	db.session.commit()  
+	try:
+		db.session.add(new)
+		db.session.commit()
+	except:
+		abort(500)
 	#TODO:所有访问数据库的地方做异常处理
 	resp = redirect(url_for('show',id=id))
 	if dar:
