@@ -29,15 +29,17 @@ function cbDarOnclick()
 function addwaring(html)
 {
 	$('#alert').html("");
-	var str =" <div class='alert alert-warning' role='alert'>" + html + "</div> "
+	var str =" <div class='alert alert-warning' role='alert' style='display:none'>" + html + "</div> "
 	$('#alert').append(str);
+	$('.alert').slideDown();
 }
 
 function adderror(html)
 {
 	$('#alert').html("");
-	var str =" <div class='alert alert-danger' role='alert'>" + html + "</div> "
+	var str =" <div class='alert alert-danger' role='alert' style='display:none'>" + html + "</div> "
 	$('#alert').append(str);
+	$('.alert').slideDown();
 }
 
 function goon()
