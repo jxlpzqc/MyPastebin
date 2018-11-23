@@ -1,8 +1,7 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from time import time,sleep
-import threading
-import random,hashlib,cgi,datetime
+import random,hashlib,cgi,datetime,threading
 
 #数据库配置
 SQL_USERNAME = 'root'
@@ -51,14 +50,21 @@ def redirect_after_alert(url,alert):
 	html = html + "window.location.href='%s';"%url
 	html = html + "</script>"
 	return html
+
+def render_showpage(message):
+	return render_template('show.html',message=message,syntax="nohighlight")
+
+def render_showpage(message,syntax):
+	return render_template('show.html',message=message,syntax=syntax)
 	
 #Syntax处理器部分
-def process_pain(content):
+def process_plain(content):
 	return content
 	
 
+
 #syntax 定义
-syntaxs = { 1:{'text':'Pain Text', 'function':process_pain}, 2:{'text':'Python'} , 3:{'text':'C++'} }
+syntaxs = { 1:{'text':'Plain Text', 'function':process_plain,'highlight':'nohighlight'},2:{'text':'Code','highlight':''}, 3:{'text':'Python','highlight':'python'} , 4:{'text':'C++','highlight':'c++'} }
 
 #自动删除过期数据
 def autodelete():
@@ -91,12 +97,14 @@ def show(id):
 	if message == None:
 		abort(404)
 	#print(message)
+	
+	resp = render_showpage(message,syntaxs[message.syntax]) 
+	
 	if request.method == "GET":
 		if message.type == 0:
-			return render_template('show.html',message=message)
+			return resp
 		elif message.type == 2:
 			if request.cookies.get(id) != message.password:
-				resp = render_template('show.html',message=message)
 				try:
 					db.session.delete(message)
 					db.session.commit()
@@ -104,12 +112,12 @@ def show(id):
 					abort(500)
 				return resp
 			else:
-				return render_template('show.html',message=message)
+				return resp
 		else:
 			return render_template('input.html')
 	else:
 		if message.password == request.form.get('password'):
-			return render_template('show.html',message=message)
+			return resp
 		else:
 			return redirect_after_alert(url_for("show",id=id),"Invalid Password!!")
 
