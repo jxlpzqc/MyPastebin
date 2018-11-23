@@ -2,6 +2,8 @@
 <html>
     <head>
         <title>Paste from {{message.poster}}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
 		<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>       
 		
 		<link rel="stylesheet"
@@ -28,6 +30,11 @@
 				text-align: right;
 				
 			}
+			a{
+				text-decoration: none;
+				color: red;
+			}
+			
 			
 			@media screen and (max-width: 600px) {
 				.content{
@@ -38,6 +45,13 @@
 				}
 			}
         </style>
+		<script>
+			function share()
+			{
+				alert("Please copy the URL and send to your fridens.")
+			}
+		</script>
+		
     </head>
     <html>
         
@@ -45,7 +59,7 @@
         <h1>Paste from {{message.poster}}</h1>
         </div>
 		<div class="content">
-			<p class="desp">Expiration Time: {{message.expiration}} &nbsp;&nbsp;&nbsp;&nbsp; Language: {{syntax.text}}</p>
+			<p class="desp">Expiration Time: {{message.expiration}} &nbsp;&nbsp;&nbsp;&nbsp; Language: {{syntax.text}}&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:share();">Share</a> &nbsp;&nbsp;&nbsp;&nbsp; </p>
 		</div>
 		<div class="content"><pre><code class="{{syntax.highlight}}">{{message.content|safe}}</code></pre></div>
 		
