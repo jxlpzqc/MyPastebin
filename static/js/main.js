@@ -20,6 +20,7 @@ function cbDarOnclick()
 	{
 		$('#passcheck').prop('checked',false); 
 		$('#passcheck').attr("disabled",true);
+		$('#input-password').val('');
 		passcheckOnclick()
 	}else{
 		$('#passcheck').attr("disabled",false);

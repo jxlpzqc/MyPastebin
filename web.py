@@ -51,10 +51,7 @@ def redirect_after_alert(url,alert):
 	html = html + "</script>"
 	return html
 
-def render_showpage(message):
-	return render_template('show.html',message=message,syntax="nohighlight")
-
-def render_showpage(message,syntax):
+def render_showpage(message,syntax="nohighlight"):
 	return render_template('show.html',message=message,syntax=syntax)
 	
 #Syntax处理器部分
