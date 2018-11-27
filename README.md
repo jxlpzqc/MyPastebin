@@ -1,9 +1,36 @@
 # 任务报告  
 任务二：My Pastebin  
 
----
 ## 项目介绍
 就是一个Pastebin！用Python3编写
+
+## 项目部署
+1. 配置好MySQL
+2. 在MySQL中创建数据库
+```SQL
+create database pastebin;
+```
+3. 将web.py的7-11行修改为对应设置
+```python
+#实例
+SQL_USERNAME = 'root' #数据库账户
+SQL_PASSWORD = '123456' #数据库密码
+SQL_HOSTADDRESS = 'localhost' #数据库主机名
+SQL_HOSTPORT = '3306' #数据库服务端口
+SQL_DATABASE = 'pastebin' #数据库名
+```
+4. 在项目目录下运行Python交互环境，并执行以下内容
+```
+Python 3.5.4 (v3.5.4:3f56838, Aug  8 2017, 02:17:05) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import web
+>>> web.db.create_all()
+```
+5. 启动web.py
+```
+python web.py
+```
+
 ## 所需要的库  
 - Flask  
 - Flask-SQLAlchemy  
@@ -40,6 +67,6 @@ pip install pymysql
     Use a production WSGI server instead.  
 
 ## Demo
- 直接点就好了吧，哈哈  
- [http://host.chengziqiu.top:8080](http://host.chengziqiu.top:8080)
+ [直接点](http://host.chengziqiu.top:5000)就好了吧，哈哈  
+ [http://host.chengziqiu.top:5000](http://host.chengziqiu.top:5000)
 
